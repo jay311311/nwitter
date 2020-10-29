@@ -2,23 +2,21 @@ import { dbService } from "fBase"
 import React, { useEffect, useState } from "react"
 
 const Home = ({userObj}) => {
-    console.log(userObj)
+
 
     const [nweet, setNweet] = useState("")
     const [nweets, setNweets] = useState([])
 
-    const getNweets = async()=>{
-    const dbNweets = await dbService.collection("nweets").get()
-       dbNweets.forEach((doc) => {
-           const nweettObj = {
-               ...doc.data(),
-               id:doc.id
-           }
-           setNweets((prev)=>[nweettObj,...prev])
-        })
-    }
     useEffect(()=>{
-        getNweets()
+        
+        dbService.collection("nweets").onSnapshot(snapshot=>{
+            const nweetArray = snapshot.docs.map((doc)=>({
+                id:doc.id,
+                ...doc.data()
+            }))
+            setNweets(nweetArray)
+        }
+        ) 
     },[])
 
     const onSubmit = async(event)=>{
@@ -34,6 +32,7 @@ const Home = ({userObj}) => {
         const {target:{value}} = event;
         setNweet(value)
     }
+
     return(
         <div>
             <form onSubmit={onSubmit}> 
