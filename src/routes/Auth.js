@@ -1,4 +1,4 @@
-import { authService } from "fBase"
+import { authService, firebaseInstance } from "fBase"
 import React,{useState} from "react"
 
 const Auth = () => {
@@ -32,7 +32,21 @@ const Auth = () => {
        }
     }
 
+    //newAccount의 true를 인자로 받아 false로 바꾸는 것
     const toggleAccount = () =>{setNewAccount((prev) => !prev)}
+
+    const onSolcialClick = async(event) =>{
+        const {target:{name}} = event;
+        let provider;
+
+        if(name === "google"){
+            provider = new firebaseInstance.auth.GoogleAuthProvider()
+        }else if(name === "github"){
+            provider = new firebaseInstance.auth.GithubAuthProvider()
+        }
+        const data = await authService.signInWithPopup(provider)
+        console.log(data)
+    }
     return(
     <div>
         <form onSubmit={onSubmit}>
@@ -57,8 +71,8 @@ const Auth = () => {
         </form>
     <span onClick={toggleAccount}>{newAccount? "sign in": "create Account"}</span>
         <div>
-            <button> Continue with Google</button>
-            <button> Continue with GitHub</button>
+            <button name="google" onClick={onSolcialClick}> Continue with Google</button>
+            <button name="github" onClick={onSolcialClick}> Continue with GitHub</button>
         </div>
     </div>
     )
