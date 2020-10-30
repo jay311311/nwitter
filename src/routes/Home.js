@@ -3,12 +3,16 @@ import { dbService } from "fBase"
 import React, { useEffect, useState } from "react"
 
 const Home = ({userObj}) => {
-    const [nweet, setNweet] = useState("")
+    const [nweet, setNweet] = useState("") //form 위한 state
     const [nweets, setNweets] = useState([])
 
     useEffect(()=>{
+        //onSnapshot은 데이터베이스에 변화가 있을때마다 알림
+        //snpashot을 받을때, 배열을 만들게됨
+        //이 배열을 setNweets로 받음
         dbService.collection("nweets").onSnapshot(snapshot=>{
             const nweetArray = snapshot.docs.map((doc)=>({
+                //모든 배열의 아이템은 이렇게 생김
                 id:doc.id,
                 ...doc.data()
             }))
