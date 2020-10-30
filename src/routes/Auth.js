@@ -47,6 +47,7 @@ const Auth = () => {
         const data = await authService.signInWithPopup(provider)
         console.log(data)
     }
+    
     return(
     <div>
         <form onSubmit={onSubmit}>
