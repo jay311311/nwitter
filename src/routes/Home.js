@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react"
 const Home = ({userObj}) => {
     const [nweet, setNweet] = useState("") //form 위한 state
     const [nweets, setNweets] = useState([])
+    const [attachment, setAttachment] = useState()
 
     useEffect(()=>{
         //onSnapshot은 데이터베이스에 변화가 있을때마다 알림
@@ -35,6 +36,21 @@ const Home = ({userObj}) => {
         setNweet(value)
     }
 
+    const onFileChange =(event) =>{
+        const {target:{files}} =event
+
+       const theFile =  files[0]
+       const reader  = new FileReader()
+
+       reader.onloadend = (finishedEvent) =>{
+           const {currentTarget:{result}} = finishedEvent
+           setAttachment(result)
+       }
+       reader.readAsDataURL(theFile)
+    }
+
+    const onClearAttachment =()=>{setAttachment(null)}
+
     return(
         <div>
             <form onSubmit={onSubmit}> 
@@ -44,7 +60,14 @@ const Home = ({userObj}) => {
                 maxLength={120} 
                 onChange={onChange} 
                 value={nweet}/>
+                <input type="file" accept="image/*" onChange={onFileChange}/>
                 <input type="submit" value="Nweet" />
+                {attachment&& (
+                    <div>
+                        <img src={attachment} alt={attachment} width="50px" height="50px"/>
+                        <button onClick={onClearAttachment}>clear</button>
+                    </div>
+                    )}
             </form>
             <div>
                 {nweets.map((nweet)=>(
