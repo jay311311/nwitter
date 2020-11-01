@@ -29,15 +29,22 @@ const Home = ({userObj}) => {
 
         //fileRef는 공기중에있는 파일에 
         //데이터를 넣어서 진짜 파일로 만들예정
-        const fileRef = storageService.ref().child(`${userObj.uid}/${uuidv4()}`)
-        const response = await  fileRef.putString(attachment, "data_url")
-        console.log(response)
-       /*  await dbService.collection("nweets").add({
+        let attachmentUrl = "";
+        if(attachment !== ""){
+            const attachmentRef = storageService.ref().child(`${userObj.uid}/${uuidv4()}`)
+            const response = await  attachmentRef.putString(attachment, "data_url")
+            attachmentUrl = await response.ref.getDownloadURL()
+        }
+        const nweetObj = { 
             text:nweet,
             createdAt : Date.now(),
-            creatorId:userObj.uid
-        })
-        setNweet("") */
+            creatorId:userObj.uid,
+            attachmentUrl
+        }
+
+        await dbService.collection("nweets").add(nweetObj)
+        setNweet("") 
+        setAttachment("")
     }
     const onChange =(event) =>{
         const {target:{value}} = event;
@@ -79,7 +86,11 @@ const Home = ({userObj}) => {
             </form>
             <div>
                 {nweets.map((nweet)=>(
-                    <Nweet key={nweet.id} nweetObj={nweet} isOwner = {nweet.creatorId === userObj.uid}/>
+                    <Nweet 
+                        key={nweet.id} 
+                        nweetObj={nweet} 
+                        isOwner = {nweet.creatorId === userObj.uid}
+                        />
                 ))}
             </div>
         </div>
